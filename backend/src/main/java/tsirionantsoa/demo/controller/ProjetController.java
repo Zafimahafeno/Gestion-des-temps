@@ -18,11 +18,9 @@ public class ProjetController {
     @Autowired
     private ProjetService projetService;
 
-    // POST /api/projets?userId=1
+    // POST /api/projets?userId=1 => Créer un projet
     @PostMapping
-    public ResponseEntity<?> createProjet(
-        @RequestBody ProjetDTO projetDTO,
-        @RequestParam Long userId) {
+    public ResponseEntity<?> createProjet(@RequestBody ProjetDTO projetDTO, @RequestParam Long userId) {
         try {
             System.out.println("=== CONTROLLER DEBUG ===");
             System.out.println("DTO reçu: " + projetDTO);
@@ -35,15 +33,11 @@ public class ProjetController {
         }
     }
 
-    // GET /api/projets?page=0&size=10&sortBy=id
-    // Cette méthode a été mise à jour pour utiliser la pagination (Page<Projet>)
-    @GetMapping
-    public ResponseEntity<Page<Projet>> getAllProjets(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size,
-        @RequestParam(defaultValue = "id") String sortBy) {
+    // GET /api/projets/liste/1 => Liste de projet créer par un utilisateur
+    @GetMapping("/liste/{id}")
+    public ResponseEntity<List<Projet>> getAllProjetsByUtilisateur(@PathVariable Long id) {
         try {
-            Page<Projet> projets = projetService.findAllProjets(page, size, sortBy);
+            List<Projet> projets = projetService.listeProjetByUtilisateur(id);
             return ResponseEntity.ok(projets);
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -51,8 +45,8 @@ public class ProjetController {
         }
     }
 
-    // GET /api/projets/1
-    @GetMapping("/{id}")
+    // GET /api/projets/1 => Détail du projet
+    @GetMapping("/detail/{id}")
     public ResponseEntity<?> getProjetById(@PathVariable Long id) {
         try {
             return projetService.findProjetById(id)
@@ -64,7 +58,7 @@ public class ProjetController {
         }
     }
 
-    // PUT /api/projets/1
+    // PUT /api/projets/1 => Modifier un projet
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProjet(@PathVariable Long id, @RequestBody ProjetDTO projetDTO) {
         try {
@@ -79,7 +73,7 @@ public class ProjetController {
         }
     }
 
-    // DELETE /api/projets/1
+    // DELETE /api/projets/1 => Supprimer un projet
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProjet(@PathVariable Long id) {
         try {

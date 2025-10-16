@@ -13,29 +13,29 @@ import java.util.Optional;
 public class AuthController {
 
     @Autowired
-    private UtilisateurRepository utilisateurRepository;
-    
-    // Injecter le PasswordEncoder
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private UtilisateurService utilisateurService;
 
-    // CREATE (Créer un nouvel utilisateur avec hachage) - Utilisé pour l'inscription
-    public Utilisateur registerUtilisateur(Utilisateur utilisateur) {
-        if (utilisateurRepository.findByEmail(utilisateur.getEmail()).isPresent()) {
-            throw new RuntimeException("Email déjà utilisé: " + utilisateur.getEmail());
+    // POST /api/auth/register
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody Utilisateur utilisateur) {
+        try {
+
+            //System.out.println("Data Utilisateur => " + utilisateur);
+
+            Utilisateur newUser = utilisateurService.registerUtilisateur(utilisateur);
+            
+            AuthResponse response = new AuthResponse();
+            response.setId(newUser.getId());
+            response.setNom(newUser.getNom());
+            response.setEmail(newUser.getEmail());
+            response.setMot_de_passe(newUser.getMotDePasse());
+            response.setMessage("Inscription réussie. Bienvenue !");
+            
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            // Email déjà utilisé
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-
-        // 1. Hacher le mot de passe
-        String hashedPassword = passwordEncoder.encode(utilisateur.getMotDePasse());
-        utilisateur.setMotDePasse(hashedPassword);
-
-        // 2. Définir les valeurs par défaut
-        utilisateur.setDateCreation(LocalDate.now());
-        if (utilisateur.getRole() == null || utilisateur.getRole().isEmpty()) {
-             utilisateur.setRole("USER"); // Rôle par défaut
-        }
-
-        return utilisateurRepository.save(utilisateur);
     }
 
     // LOGIN (Vérifier les identifiants)
