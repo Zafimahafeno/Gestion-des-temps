@@ -15,42 +15,19 @@ public class UtilisateurController {
 
     @Autowired
     private UtilisateurService utilisateurService;
+    
 
-    // --- REMOVED: La méthode createUtilisateur est déplacée vers AuthController.java ---
-
-    // GET /api/utilisateurs
+    // GET /api/utilisateurs => Liste de tous les utilisateurs
     @GetMapping
     public List<Utilisateur> getAllUtilisateurs() {
         return utilisateurService.findAllUtilisateurs();
     }
 
-    // GET /api/utilisateurs/1
+    // GET /api/utilisateurs/1 => Detail utilisateur
     @GetMapping("/{id}")
     public ResponseEntity<Utilisateur> getUtilisateurById(@PathVariable Long id) {
         return utilisateurService.findUtilisateurById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
-    }
-
-    // PUT /api/utilisateurs/1
-    @PutMapping("/{id}")
-    public ResponseEntity<Utilisateur> updateUtilisateur(@PathVariable Long id, @RequestBody Utilisateur utilisateurDetails) {
-        try {
-            Utilisateur updatedUser = utilisateurService.updateUtilisateur(id, utilisateurDetails);
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    // DELETE /api/utilisateurs/1
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUtilisateur(@PathVariable Long id) {
-        try {
-            utilisateurService.deleteUtilisateur(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 }
