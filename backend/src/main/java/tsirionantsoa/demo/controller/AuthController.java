@@ -22,12 +22,16 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody Utilisateur utilisateur) {
         try {
+
+            //System.out.println("Data Utilisateur => " + utilisateur);
+
             Utilisateur newUser = utilisateurService.registerUtilisateur(utilisateur);
             
             AuthResponse response = new AuthResponse();
             response.setId(newUser.getId());
             response.setNom(newUser.getNom());
             response.setEmail(newUser.getEmail());
+            response.setMot_de_passe(newUser.getMotDePasse());
             response.setMessage("Inscription réussie. Bienvenue !");
             
             return ResponseEntity.ok(response);
