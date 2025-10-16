@@ -24,7 +24,7 @@ public class Utilisateur {
     private String email;
 
     @Column(name = "mot_de_passe", nullable = false)
-    @JsonIgnore // Ne jamais sérialiser le mot de passe
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ToString.Exclude // Ne jamais l'inclure dans les logs Lombok
     private String motDePasse;
 

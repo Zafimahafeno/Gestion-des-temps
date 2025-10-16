@@ -1,63 +1,93 @@
 package tsirionantsoa.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import tsirionantsoa.demo.dto.AuthResponse;
-import tsirionantsoa.demo.dto.LoginRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 import tsirionantsoa.demo.model.Utilisateur;
-import tsirionantsoa.demo.service.UtilisateurService;
+import tsirionantsoa.demo.repository.UtilisateurRepository;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
-@RestController
-@CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/api/auth")
+@Service
 public class AuthController {
 
     @Autowired
-    private UtilisateurService utilisateurService;
+    private UtilisateurRepository utilisateurRepository;
+    
+    // Injecter le PasswordEncoder
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
-    // POST /api/auth/register
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody Utilisateur utilisateur) {
-        try {
-            Utilisateur newUser = utilisateurService.registerUtilisateur(utilisateur);
-            
-            AuthResponse response = new AuthResponse();
-            response.setId(newUser.getId());
-            response.setNom(newUser.getNom());
-            response.setEmail(newUser.getEmail());
-            response.setMessage("Inscription réussie. Bienvenue !");
-            
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            // Email déjà utilisé
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    // CREATE (Créer un nouvel utilisateur avec hachage) - Utilisé pour l'inscription
+    public Utilisateur registerUtilisateur(Utilisateur utilisateur) {
+        if (utilisateurRepository.findByEmail(utilisateur.getEmail()).isPresent()) {
+            throw new RuntimeException("Email déjà utilisé: " + utilisateur.getEmail());
         }
+
+        // 1. Hacher le mot de passe
+        String hashedPassword = passwordEncoder.encode(utilisateur.getMotDePasse());
+        utilisateur.setMotDePasse(hashedPassword);
+
+        // 2. Définir les valeurs par défaut
+        utilisateur.setDateCreation(LocalDate.now());
+        if (utilisateur.getRole() == null || utilisateur.getRole().isEmpty()) {
+             utilisateur.setRole("USER"); // Rôle par défaut
+        }
+
+        return utilisateurRepository.save(utilisateur);
     }
 
-    // POST /api/auth/login
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
-        Optional<Utilisateur> userOpt = utilisateurService.loginUtilisateur(
-            loginRequest.getEmail(), 
-            loginRequest.getMotDePasse()
-        );
+    // LOGIN (Vérifier les identifiants)
+    public Optional<Utilisateur> loginUtilisateur(String email, String rawPassword) {
+        Optional<Utilisateur> userOpt = utilisateurRepository.findByEmail(email);
 
         if (userOpt.isPresent()) {
-            Utilisateur user = userOpt.get();
-            
-            AuthResponse response = new AuthResponse();
-            response.setId(user.getId());
-            response.setNom(user.getNom());
-            response.setEmail(user.getEmail());
-            response.setMessage("Connexion réussie !");
-
-            // Renvoie l'ID utilisateur au frontend
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou mot de passe incorrect.");
+            Utilisateur utilisateur = userOpt.get();
+            // Comparer le mot de passe brut avec le mot de passe haché
+            if (passwordEncoder.matches(rawPassword, utilisateur.getMotDePasse())) {
+                return Optional.of(utilisateur);
+            }
         }
+        return Optional.empty(); // Échec de la connexion
+    }
+    
+    // READ (Trouver tous les utilisateurs)
+    public List<Utilisateur> findAllUtilisateurs() {
+        return utilisateurRepository.findAll();
+    }
+
+    // READ (Trouver un utilisateur par ID)
+    public Optional<Utilisateur> findUtilisateurById(Long id) {
+        return utilisateurRepository.findById(id);
+    }
+
+    // UPDATE (Mettre à jour un utilisateur existant)
+    public Utilisateur updateUtilisateur(Long id, Utilisateur utilisateurDetails) {
+        return utilisateurRepository.findById(id)
+            .map(utilisateur -> {
+                if (utilisateurDetails.getNom() != null) {
+                    utilisateur.setNom(utilisateurDetails.getNom());
+                }
+                if (utilisateurDetails.getEmail() != null) {
+                    // Vérification de l'unicité de l'email à ajouter si changement
+                    utilisateur.setEmail(utilisateurDetails.getEmail());
+                }
+                // Si le mot de passe est fourni, le hacher avant de le sauvegarder
+                if (utilisateurDetails.getMotDePasse() != null && !utilisateurDetails.getMotDePasse().isEmpty()) {
+                    String hashedPassword = passwordEncoder.encode(utilisateurDetails.getMotDePasse());
+                    utilisateur.setMotDePasse(hashedPassword);
+                }
+                return utilisateurRepository.save(utilisateur);
+            })
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID: " + id));
+    }
+
+    // DELETE (Supprimer un utilisateur)
+    public void deleteUtilisateur(Long id) {
+        if (!utilisateurRepository.existsById(id)) {
+            throw new RuntimeException("Utilisateur non trouvé avec l'ID: " + id);
+        }
+        utilisateurRepository.deleteById(id);
     }
 }
