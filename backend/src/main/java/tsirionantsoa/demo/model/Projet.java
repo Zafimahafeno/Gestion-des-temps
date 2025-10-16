@@ -35,11 +35,12 @@ public class Projet {
     public Projet() {
     }
 
-    public Projet(String nom, String description, LocalDate dateDebut, LocalDate dateFin) {
+    public Projet(String nom, String description, LocalDate dateDebut, LocalDate dateFin, Utilisateur utilisateur) {
         this.nom = nom;
         this.description = description;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
+        this.utilisateur = utilisateur;
     }
 
     // ============= GETTERS ET SETTERS =============
@@ -100,8 +101,9 @@ public class Projet {
     }
 
     // ============= TOSTRING =============
+        /*
     @Override
-    public String toString() {
+        public String toString() {
         return "Projet{" +
                 "id=" + id +
                 ", nom='" + nom + '\'' +
@@ -111,4 +113,6 @@ public class Projet {
                 ", dateCreation=" + dateCreation +
                 '}';
     }
+     */
+
 }
