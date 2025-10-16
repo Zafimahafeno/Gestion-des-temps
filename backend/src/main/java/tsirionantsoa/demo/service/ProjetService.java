@@ -25,6 +25,7 @@ private ProjetRepository projetRepository;
 @Autowired
 private UtilisateurRepository utilisateurRepository;
 
+//Ajouter un projet
 public Projet createProjet(ProjetDTO projetDTO, Long userId) {
 System.out.println("=== DEBUG CREATE PROJET ===");
 System.out.println("DTO reçu: " + projetDTO);
@@ -64,51 +65,42 @@ System.out.println("=== FIN DEBUG ===");
 return savedProjet;
 }
 
-// --- MÉTHODE DE PAGINATION MISE À JOUR ---
-/**
- * Récupère une page de projets.
- * @param page Numéro de page (commence à 0)
- * @param size Taille de la page
- * @param sortBy Champ de tri
- * @return Une Page<Projet> contenant les projets paginés
- */
-public Page<Projet> findAllProjets(int page, int size, String sortBy) {
-    // Crée l'objet Pageable avec le numéro de page, la taille et le tri
-    Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-    return projetRepository.findAll(pageable);
+// Liste de projet créer par un utilisateur
+public List<Projet> listeProjetByUtilisateur(Long id){
+    return projetRepository.findByUtilisateurId(id);
 }
-// --- FIN DE LA MODIFICATION DE PAGINATION ---
 
-// L'ancienne méthode sans pagination est supprimée.
-
+// Détail du projet
 public Optional<Projet> findProjetById(Long id) {
-return projetRepository.findById(id);
+    return projetRepository.findById(id);
 }
 
+// Modifier du projet
 public Projet updateProjet(Long id, ProjetDTO projetDTO) {
-System.out.println("=== DEBUG UPDATE PROJET ===");
-System.out.println("DTO reçu: " + projetDTO);
-Projet projet = projetRepository.findById(id)
-.orElseThrow(() -> new RuntimeException("Projet introuvable avec l'ID: " + id));
-if (projetDTO.getNom() != null && !projetDTO.getNom().trim().isEmpty()) {
-projet.setNom(projetDTO.getNom());}
-if (projetDTO.getDescription() != null && !projetDTO.getDescription().trim().isEmpty()) {
-projet.setDescription(projetDTO.getDescription());
-}
-if (projetDTO.getDateDebut() != null && !projetDTO.getDateDebut().isEmpty()) {
-projet.setDateDebut(LocalDate.parse(projetDTO.getDateDebut()));
-} else {
-    projet.setDateDebut(null);
-}
-if (projetDTO.getDateFin() != null && !projetDTO.getDateFin().isEmpty()) {
-projet.setDateFin(LocalDate.parse(projetDTO.getDateFin()));
-} else {
-    projet.setDateFin(null);
-}
-System.out.println("Projet après modification: " + projet);
-return projetRepository.save(projet);
+    System.out.println("=== DEBUG UPDATE PROJET ===");
+    System.out.println("DTO reçu: " + projetDTO);
+    Projet projet = projetRepository.findById(id)
+    .orElseThrow(() -> new RuntimeException("Projet introuvable avec l'ID: " + id));
+    if (projetDTO.getNom() != null && !projetDTO.getNom().trim().isEmpty()) {
+    projet.setNom(projetDTO.getNom());}
+    if (projetDTO.getDescription() != null && !projetDTO.getDescription().trim().isEmpty()) {
+    projet.setDescription(projetDTO.getDescription());
+    }
+    if (projetDTO.getDateDebut() != null && !projetDTO.getDateDebut().isEmpty()) {
+    projet.setDateDebut(LocalDate.parse(projetDTO.getDateDebut()));
+    } else {
+        projet.setDateDebut(null);
+    }
+    if (projetDTO.getDateFin() != null && !projetDTO.getDateFin().isEmpty()) {
+    projet.setDateFin(LocalDate.parse(projetDTO.getDateFin()));
+    } else {
+        projet.setDateFin(null);
+    }
+    System.out.println("Projet après modification: " + projet);
+    return projetRepository.save(projet);
 }
 
+// Supprimer projet
 public void deleteProjet(Long id) {
 if (!projetRepository.existsById(id)) {
 throw new RuntimeException("Projet introuvable avec l'ID: " + id);
