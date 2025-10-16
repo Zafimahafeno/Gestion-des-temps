@@ -1,5 +1,6 @@
 // Composant TaskCard
 import React, { useState, useEffect, useCallback } from "react";
+import './Dashboard.css'
 import {
     Folder,
     CheckSquare,
@@ -433,124 +434,7 @@ const UserDashboard = () => {
 
     return (
         <>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
-            <style>{`
-                * { box-sizing: border-box; margin: 0; padding: 0; }
-                body { font-family: 'Inter', sans-serif; }
-                .sidebar {
-                    width: 280px;
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(20px);
-                    border-right: 1px solid rgba(0,0,0,0.05);
-                    display: flex;
-                    flex-direction: column;
-                    padding: 1.5rem;
-                    position: fixed;
-                    height: 100vh;
-                    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-                    z-index: 10;
-                    overflow-y: auto;
-                }
-                .sidebar-title {
-                    font-weight: 900;
-                    font-size: 1.5rem;
-                    margin-bottom: 2rem;
-                    color: #1a202c;
-                }
-                .sidebar-btn {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                    padding: 0.8rem 1rem;
-                    border: none;
-                    background: transparent;
-                    color: #4a5568;
-                    font-weight: 600;
-                    border-radius: 12px;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    width: 100%;
-                    text-align: left;
-                }
-                .sidebar-btn:hover, .sidebar-btn.active {
-                    background: #e2e8f0;
-                    color: #4c51bf;
-                }
-                .sidebar-btn.active {
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-                }
-                .main-content {
-                    margin-left: 280px;
-                    padding: 2rem;
-                    width: calc(100% - 280px);
-                    min-height: 100vh;
-                }
-                .glass-card {
-                    background: white;
-                    border-radius: 1rem;
-                    padding: 1.5rem;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-                    margin-bottom: 1rem;
-                }
-                .glass-card:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-                }
-                .stat-icon {
-                    padding: 1rem;
-                    border-radius: 10px;
-                    color: white;
-                }
-                .action-btn {
-                    padding: 0.4rem 0.6rem;
-                    border: none;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    font-size: 0.9rem;
-                }
-                .action-btn:hover {
-                    transform: scale(1.05);
-                }
-                .btn-edit {
-                    background: #4299e1;
-                    color: white;
-                }
-                .btn-edit:hover {
-                    background: #3182ce;
-                }
-                .btn-delete {
-                    background: #f56565;
-                    color: white;
-                }
-                .btn-delete:hover {
-                    background: #e53e3e;
-                }
-                .edit-form {
-                    background: #f7fafc;
-                    padding: 1rem;
-                    border-radius: 8px;
-                    margin-top: 1rem;
-                }
-                @media (max-width: 992px) {
-                    .sidebar {
-                        width: 100%;
-                        height: auto;
-                        position: relative;
-                        flex-direction: row;
-                        overflow-x: auto;
-                        border-right: none;
-                        border-bottom: 1px solid rgba(0,0,0,0.1);
-                    }
-                    .sidebar-title { display: none; }
-                    .main-content {
-                        margin-left: 0;
-                        width: 100%;
-                        padding: 1rem;
-                    }
-                }
-            `}</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
             <div style={{
                 display: "flex",
                 minHeight: "100vh",
